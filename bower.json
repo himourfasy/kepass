@@ -1,0 +1,28 @@
+{
+  "name": "kepass",
+  "version": "0.0.0",
+  "authors": [
+    "saber <salute.baby@gmail.com>"
+  ],
+  "description": "keep password",
+  "main": "index.html",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "password",
+    "crypto"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}

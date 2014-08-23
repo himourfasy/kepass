@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kepass</title>
+    <!-- <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet"> -->
+        <link href="cyborg.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+  </head>
+  <body >
+    
+    <div class="container well well-lg" id="loginBox">
+        <input class="form-control" id="loginpwd" type="password" placeholder="Main Password..."/>
+      </div>
+
+
+
+      <div id="main">
+        <ul class="nav nav-tabs" role="tablist" >
+          <li role="presentation" class="active"><a href="#home" data-toggle="tab">Home</a></li>
+          <li role="presentation"><a href="#add" data-toggle="tab">Add</a></li>
+          <li role="presentation"><a href="#config" data-toggle="tab">Config</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="home">
+            <div class="container-fluid" id="query">
+              <div class="row">
+                <div class="col-md-12">
+                  <h1></h1>
+                </div>
+              </div>
+              <p></p>
+              <div class="row">
+                <div class="col-xs-2 col-md-2">
+                </div>
+                <div class="col-xs-6 col-md-6">
+                  <input class="form-control" id="query"   type="text" placeholder="Query" />
+                </div>
+                <div class="col-xs-2 col-md-2">
+                  <button type="submit" class="btn btn-default">Query</button>
+                </div>
+                <div class="col-xs-2 col-md-2">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="add"><div class="container-fluid" >
+            <div class="row"></div>
+            <div class="row">
+              <div class="col-xs-1 col-md-1">
+              </div>
+              <div class="col-xs-10 col-md-10">
+                <div class="form-group">
+                  <label for="site">Site</label>
+                  <input class="form-control" id="site"   type="text" placeholder="Site" />
+                </div>
+                <div class="form-group">
+                  <label for="user">User</label>
+                  <input class="form-control" id="user"   type="text" placeholder="User Name" />
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input class="form-control" id="password" type="password" placeholder="Password" />
+                </div>
+                
+                <button  class="btn btn-default" id="btnAddItem">Submit</button>
+              </div>
+              <div class="col-xs-1 col-md-1">
+              </div>
+            </div>
+          </div></div>
+          <div class="tab-pane fade" id="config"></div>
+        </div>
+      </div>
+      
+      
+      
+      
+      <script src="bower_components/jquery/dist/jquery.js"></script>
+      <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+      <script src="main.js"></script>
+    </body>
+    
+  </html>

@@ -1,0 +1,8 @@
+{
+  "name": "kepass",
+  "main": "index.html",
+   "window": { 
+    "toolbar": true,
+    "show":false
+  } 
+}
