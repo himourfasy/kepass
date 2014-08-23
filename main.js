@@ -11,11 +11,11 @@ var path = require('path');
 var fs = require('fs');
 var gui = require('nw.gui');
 // var emitter = new events.EventEmitter();
-var crypto = require('crypto');
 var dir = getUserHome() + path.sep + '.kepass';
 var dataFile = path.sep + '.data';
 var entries = [];
 var content = [];
+var mainpwd;
 
 
 function encrypto(text, key) {
@@ -51,7 +51,7 @@ function initPwd() {
 
 		//init password
 		var what = encrypto('this is key!', key);
-		fs.appendFile(dir + dataFile, what, 'base64', function(err) {
+		fs.appendFile(dir + dataFile, what + '\n', 'base64', function(err) {
 			if (err)
 				console.log("fail " + err);
 			else
@@ -89,10 +89,10 @@ $('#loginpwd').keydown(function() {
 		if (doLogin(key)) {
 			$('#loginBox').css('display', 'none');
 			$('#main').css('display', 'block');
+			mainpwd = key;
 		} else {
 			$('#loginpwd').css('background', 'red');
 		}
-
 
 		return false;
 	}
@@ -103,13 +103,31 @@ function entry(n) {
 	this.site = n;
 	this.user = "";
 	this.pwds = new Array();
-	this.getMainPwd = function() {
-		return this.pwds[0];
-	};
-	this.addPwd = function(e) {
-		this.pwds.push(e);
-	};
 }
+entry.prototype.getMainPwd = function() {
+	return this.pwds[0];
+};
+entry.prototype.addPwd = function(e) {
+	this.pwds.push(encrypto(e, mainpwd));
+};
+entry.fromJSONObject = function(j) {
+	var e = new entry(j.site);
+	e.user = j.user;
+	e.pwds = j.pwds;
+	return e;
+}
+
+function addItem(item) {
+	entries.push(item);
+
+	fs.appendFile(dir + dataFile, item.toString + ',', 'base64', function(err) {
+		if (err)
+			console.log("fail " + err);
+		else
+			console.log("ok");
+	});
+}
+
 $('#btnAddItem').click(function() {
 	var site = $('#site');
 	var user = $('#user');
@@ -117,8 +135,9 @@ $('#btnAddItem').click(function() {
 	var e = new entry(site.val());
 	e.user = user.val();
 	e.addPwd(pwd.val());
-	entries.push(e);
-	console.log(e);
+
+	addItem(e);
+
 	site.val('');
 	user.val('');
 	pwd.val('');
