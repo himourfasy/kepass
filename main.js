@@ -12,9 +12,10 @@ var fs = require('fs');
 var gui = require('nw.gui');
 // var emitter = new events.EventEmitter();
 var dir = getUserHome() + path.sep + '.kepass';
-var dataFile = path.sep + '.data';
+var keyFile = dir + path.sep+'.key';
+var dataFile = dir + path.sep + '.data';
 var entries = [];
-var content = [];
+var keyContent;
 var mainpwd;
 
 
@@ -37,7 +38,7 @@ function decrypto(text, key) {
 var doLogin = function(key) {
 	//validate
 	try {
-		var p = decrypto(content[0], key);
+		var p = decrypto(keyContent, key);
 		return p == 'this is key!';
 	} catch (e) {
 		return false;
@@ -51,7 +52,7 @@ function initPwd() {
 
 		//init password
 		var what = encrypto('this is key!', key);
-		fs.appendFile(dir + dataFile, what + '\n', 'base64', function(err) {
+		fs.appendFile(keyFile, what , 'base64', function(err) {
 			if (err)
 				console.log("fail " + err);
 			else
@@ -66,12 +67,12 @@ function initPwd() {
 
 fs.exists(dir, function(exists) {
 	if (exists) {
-		fs.readFile(dir + dataFile, 'base64', function(err, data) {
+		fs.readFile(keyFile, 'base64', function(err, data) {
 			if (err) {
 				initPwd();
 			} else {
 				//load data
-				content = data.split('\n');
+				keyContent = data;
 				$('#loginBox').css('display', 'block');
 			}
 		});
@@ -107,6 +108,9 @@ function entry(n) {
 entry.prototype.getMainPwd = function() {
 	return this.pwds[0];
 };
+entry.prototype.setUser = function(u){
+	this.user = encrypto(u, mainpwd);
+}
 entry.prototype.addPwd = function(e) {
 	this.pwds.push(encrypto(e, mainpwd));
 };
@@ -120,7 +124,7 @@ entry.fromJSONObject = function(j) {
 function addItem(item) {
 	entries.push(item);
 
-	fs.appendFile(dir + dataFile, item.toString + ',', 'base64', function(err) {
+	fs.appendFile(dataFile, JSON.stringify(item) + '\n', function(err) {
 		if (err)
 			console.log("fail " + err);
 		else
@@ -133,7 +137,7 @@ $('#btnAddItem').click(function() {
 	var user = $('#user');
 	var pwd = $('#password');
 	var e = new entry(site.val());
-	e.user = user.val();
+	e.setUser(  user.val());
 	e.addPwd(pwd.val());
 
 	addItem(e);
