@@ -89,9 +89,7 @@ fs.exists(dir, function(exists) {
 				for (var line in content) {
 					try {
 						entries.push(entry.fromJSONObject(JSON.parse(content[line])));
-					} catch (e) {
-						
-					}
+					} catch (e) {}
 
 				}
 			}
@@ -109,13 +107,25 @@ $('#loginpwd').keydown(function(event) {
 
 		if (doLogin(key)) {
 			$('#loginBox').fadeOut('fast', function() {
-				$('#main').show('fast', function(){
+				$('#main').show('fast', function() {
 					$('#query').focus();
 				});
 			});
 			mainpwd = key;
 		} else {
+			var pd = $('#loginBox');
 			$('#loginpwd').css('background', 'red');
+
+			for (var i = 1; i < 4; i++) {
+				pd.animate({
+					height: '+=10px',
+					width: '+=20px'
+				}, 30);
+				pd.animate({
+					height: '-=10px',
+					width: '-=20px'
+				}, 30);
+			}
 		}
 
 		return false;
@@ -128,30 +138,30 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 	}
 });
 
-function query(t){
+function query(t) {
 	var result = [];
-	for(var i in entries){
-		if(entries[i].site.indexOf(t)>-1){
+	for (var i in entries) {
+		if (entries[i].site.indexOf(t) > -1) {
 			result.push(entries[i])
 		}
 	}
 	return result;
 }
-function showResult(r){
+
+function showResult(r) {
 	var a = $(' <a href="#" class="list-group-item"></a>');
 	var result = $('#result');
 	result.empty();
-	for(var i in r){
+	for (var i in r) {
 		var m = a.clone();
 		m.text(r[i].site);
 		result.append(m);
 	}
 }
-$('#query').keydown(function(event){
+$('#query').keydown(function(event) {
 	if (event.keyCode == 13) {
 		var text = $('#query').val();
 		showResult(query(text));
-
 	}
 });
 
