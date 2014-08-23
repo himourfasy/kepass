@@ -103,7 +103,7 @@ fs.exists(dir, function(exists) {
 });
 
 
-$('#loginpwd').keydown(function() {
+$('#loginpwd').keydown(function(event) {
 	if (event.keyCode == 13) {
 		var key = $('#loginpwd').val();
 
@@ -125,6 +125,33 @@ $('#loginpwd').keydown(function() {
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 	if (e.target.hash == '#home') {
 		$('#query').focus();
+	}
+});
+
+function query(t){
+	var result = [];
+	for(var i in entries){
+		if(entries[i].site.indexOf(t)>-1){
+			result.push(entries[i])
+		}
+	}
+	return result;
+}
+function showResult(r){
+	var a = $(' <a href="#" class="list-group-item"></a>');
+	var result = $('#result');
+	result.empty();
+	for(var i in r){
+		var m = a.clone();
+		m.text(r[i].site);
+		result.append(m);
+	}
+}
+$('#query').keydown(function(event){
+	if (event.keyCode == 13) {
+		var text = $('#query').val();
+		showResult(query(text));
+
 	}
 });
 
