@@ -123,36 +123,3 @@ $('#btnAddItem').click(function() {
 	user.val('');
 	pwd.val('');
 });
-
-
-
-//test
-var test = function() {
-	// console.log(e);
-	var crypto = require('crypto');
-	var cipher = crypto.createCipher('aes256', 'whosyourdad');
-	var u = cipher.update('nobody what lasdfj iii', 'binary', 'base64');
-	var f = cipher.final('base64');;
-	// console.log(u+f);
-	// console.log(u);
-	var decipher = crypto.createDecipher('aes256', 'whosyourdad');
-	var d = decipher.update(u + f, "base64", "binary");
-	var d2 = decipher.final('binary');
-	console.log(d + d2);
-	// fs.readFile(dir + dataFile, 'base64', function(err, data) {
-	// 	if (err) {
-	// 		console.log("read fail " + err);
-	// 		if (!fs.existsSync(dir)) {
-	// 			fs.mkdirSync(dir);
-	// 		}
-	// 		fs.appendFile(dir + dataFile, u + f, 'base64', function(err) {
-	// 			if (err)
-	// 				console.log("fail " + err);
-	// 			else
-	// 				console.log("写入文件ok");
-	// 		});
-	// 	} else {
-	// 		console.log(data);
-	// 	}
-	// });
-}
