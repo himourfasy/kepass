@@ -90,7 +90,7 @@ fs.exists(dir, function(exists) {
 					try {
 						entries.push(entry.fromJSONObject(JSON.parse(content[line])));
 					} catch (e) {
-						console.log(e);
+						
 					}
 
 				}
@@ -109,7 +109,9 @@ $('#loginpwd').keydown(function() {
 
 		if (doLogin(key)) {
 			$('#loginBox').fadeOut('fast', function() {
-				$('#main').show('fast');
+				$('#main').show('fast', function(){
+					$('#query').focus();
+				});
 			});
 			mainpwd = key;
 		} else {
@@ -117,6 +119,12 @@ $('#loginpwd').keydown(function() {
 		}
 
 		return false;
+	}
+});
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+	if (e.target.hash == '#home') {
+		$('#query').focus();
 	}
 });
 
