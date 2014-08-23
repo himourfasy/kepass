@@ -12,7 +12,7 @@ var fs = require('fs');
 var gui = require('nw.gui');
 // var emitter = new events.EventEmitter();
 var dir = getUserHome() + path.sep + '.kepass';
-var keyFile = dir + path.sep+'.key';
+var keyFile = dir + path.sep + '.key';
 var dataFile = dir + path.sep + '.data';
 var entries = [];
 var keyContent;
@@ -52,7 +52,7 @@ function initPwd() {
 
 		//init password
 		var what = encrypto('this is key!', key);
-		fs.appendFile(keyFile, what , 'base64', function(err) {
+		fs.appendFile(keyFile, what, 'base64', function(err) {
 			if (err)
 				console.log("fail " + err);
 			else
@@ -67,6 +67,7 @@ function initPwd() {
 
 fs.exists(dir, function(exists) {
 	if (exists) {
+		//read key file.
 		fs.readFile(keyFile, 'base64', function(err, data) {
 			if (err) {
 				initPwd();
@@ -74,6 +75,21 @@ fs.exists(dir, function(exists) {
 				//load data
 				keyContent = data;
 				$('#loginBox').css('display', 'block');
+			}
+		});
+		//read data file
+		fs.readFile(dataFile, 'utf8', function(err, data) {
+			if (!err) {
+				//load data
+				var content = data.split('\n');
+				for (var line in content) {
+					try {
+						entries.push(entry.fromJSONObject(JSON.parse(content[line])));
+					} catch (e) {
+						console.log(e);
+					}
+
+				}
 			}
 		});
 	} else {
@@ -108,7 +124,7 @@ function entry(n) {
 entry.prototype.getMainPwd = function() {
 	return this.pwds[0];
 };
-entry.prototype.setUser = function(u){
+entry.prototype.setUser = function(u) {
 	this.user = encrypto(u, mainpwd);
 }
 entry.prototype.addPwd = function(e) {
@@ -137,7 +153,7 @@ $('#btnAddItem').click(function() {
 	var user = $('#user');
 	var pwd = $('#password');
 	var e = new entry(site.val());
-	e.setUser(  user.val());
+	e.setUser(user.val());
 	e.addPwd(pwd.val());
 
 	addItem(e);
