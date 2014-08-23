@@ -62,7 +62,9 @@ function initPwd() {
 		return true;
 	}
 
-	$('#loginBox').css('display', 'block');
+	$('#loginBox').fadeIn('slow', function() {
+		$('#loginpwd').focus();
+	});
 }
 
 fs.exists(dir, function(exists) {
@@ -74,7 +76,9 @@ fs.exists(dir, function(exists) {
 			} else {
 				//load data
 				keyContent = data;
-				$('#loginBox').css('display', 'block');
+				$('#loginBox').fadeIn('slow', function() {
+					$('#loginpwd').focus();
+				});
 			}
 		});
 		//read data file
@@ -104,8 +108,9 @@ $('#loginpwd').keydown(function() {
 		var key = $('#loginpwd').val();
 
 		if (doLogin(key)) {
-			$('#loginBox').css('display', 'none');
-			$('#main').css('display', 'block');
+			$('#loginBox').fadeOut('fast', function() {
+				$('#main').show('fast');
+			});
 			mainpwd = key;
 		} else {
 			$('#loginpwd').css('background', 'red');
