@@ -152,10 +152,26 @@ function showResult(r) {
 	var a = $(' <a href="#" class="list-group-item"></a>');
 	var result = $('#result');
 	result.empty();
+	var click = function(e) {
+		$(e.target).siblings().removeClass('active');
+		$(e.target).addClass('active');
+		var detail = $('#detail');
+		detail.empty();
+		var i = parseInt(e.target.hash.substr(1));
+		var di = $('  <li class="list-group-item"></li>');
+		var user = di.clone();
+		user.text(decrypto(r[i].user, mainpwd));
+		detail.append(user);
+		var pwd = di;
+		pwd.text(decrypto(r[i].getMainPwd(), mainpwd));
+		detail.append(pwd);
+	};
 	for (var i in r) {
 		var m = a.clone();
+		m.attr('href', '#' + i);
 		m.text(r[i].site);
 		result.append(m);
+		m.click(click);
 	}
 }
 $('#query').keydown(function(event) {
