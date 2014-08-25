@@ -125,6 +125,16 @@ $('#loginpwd').keydown(function(event) {
 
 			var count = 0;
 			$('#countDown').fadeIn('fast');
+			for (var i = 1; i < 4; i++) {
+				pd.animate({
+					height: '+=10px',
+					width: '+=20px'
+				}, 30);
+				pd.animate({
+					height: '-=10px',
+					width: '-=20px'
+				}, 30);
+			}
 			interval = setInterval(function() {
 				if (count == 10) {
 					gui.App.quit();
