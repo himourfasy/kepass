@@ -6,6 +6,10 @@ function getUserHome() {
 	// return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 	return process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 }
+//since JSON in webkit will lead to a different value as in node interpreter.
+Buffer.prototype.toByteArray = function() {
+	return Array.prototype.slice.call(this, 0);
+}
 var events = require('events');
 var path = require('path');
 var fs = require('fs');
@@ -19,18 +23,14 @@ var keyContent;
 var mainpwd;
 
 
-function encrypto(text, key) {
+function encrypto(buf, key) {
 	var cipher = require('crypto').createCipher('aes256', key)
-	var u = cipher.update(text, 'binary', 'base64');
-	var f = cipher.final('base64');
-	return u + f;
+	return Buffer.concat([cipher.update(buf), cipher.final()]);
 }
 
-function decrypto(text, key) {
+function decrypto(buf, key) {
 	var decipher = require('crypto').createDecipher('aes256', key);
-	var d = decipher.update(text, "base64", "binary");
-	var d2 = decipher.final("binary");
-	return d + d2;
+	return Buffer.concat([decipher.update(buf), decipher.final()]);
 }
 
 
@@ -52,7 +52,7 @@ function initPwd() {
 
 		//init password
 		var what = encrypto('this is key!', key);
-		fs.appendFile(keyFile, what, 'base64', function(err) {
+		fs.appendFile(keyFile, what, function(err) {
 			if (err)
 				console.log("fail " + err);
 			else
@@ -70,7 +70,7 @@ function initPwd() {
 fs.exists(dir, function(exists) {
 	if (exists) {
 		//read key file.
-		fs.readFile(keyFile, 'base64', function(err, data) {
+		fs.readFile(keyFile, function(err, data) {
 			if (err) {
 				initPwd();
 			} else {
@@ -148,6 +148,11 @@ function query(t) {
 	return result;
 }
 
+function deToString(bs){
+	var b = new Buffer(JSON.parse(bs));
+	return decrypto(b,mainpwd).toString();
+}
+
 function showResult(r) {
 	var a = $(' <a href="#" class="list-group-item"></a>');
 	var result = $('#result');
@@ -160,10 +165,10 @@ function showResult(r) {
 		var i = parseInt(e.target.hash.substr(1));
 		var di = $('  <li class="list-group-item"></li>');
 		var user = di.clone();
-		user.text(decrypto(r[i].user, mainpwd));
+		user.text( deToString(r[i].user));
 		detail.append(user);
 		var pwd = di;
-		pwd.text(decrypto(r[i].getMainPwd(), mainpwd));
+		pwd.text( deToString(r[i].getMainPwd()));
 		detail.append(pwd);
 	};
 	for (var i in r) {
@@ -181,6 +186,16 @@ $('#query').keydown(function(event) {
 	}
 });
 
+function enToString(s) {
+	//why s is double-byte encoded??!!!
+	var ba = [];
+	for(var i in s){
+		ba.push(s.charCodeAt(i));
+	}
+	var t = new Buffer(ba); 
+	var b = encrypto(t, mainpwd);
+	return JSON.stringify(b.toByteArray());
+}
 
 function entry(n) {
 	this.site = n;
@@ -191,10 +206,10 @@ entry.prototype.getMainPwd = function() {
 	return this.pwds[0];
 };
 entry.prototype.setUser = function(u) {
-	this.user = encrypto(u, mainpwd);
+	this.user = enToString(u);
 }
 entry.prototype.addPwd = function(e) {
-	this.pwds.push(encrypto(e, mainpwd));
+	this.pwds.push(enToString(e));
 };
 entry.fromJSONObject = function(j) {
 	var e = new entry(j.site);
