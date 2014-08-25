@@ -1,17 +1,18 @@
 body {
 	background: #444 url(carbon_fibre_big.png);
 }
-
 #main {
 	display: none;
 }
-
 #loginBox {
 	display: none;
-	width: 40%;  
+	width: 40%;
 	position: relative;
-	margin-top: 20%;  
+	margin-top: 20%;
 }
-#loginpwd{
+#loginpwd {
 	font-weight: bold;
+}
+#countDown {
+	display: none;
 }

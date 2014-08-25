@@ -21,6 +21,7 @@ var dataFile = dir + path.sep + '.data';
 var entries = [];
 var keyContent;
 var mainpwd;
+var interval;
 
 
 function encrypto(buf, key) {
@@ -106,6 +107,11 @@ $('#loginpwd').keydown(function(event) {
 		var key = $('#loginpwd').val();
 
 		if (doLogin(key)) {
+			if (interval) {
+				clearInterval(interval);
+				$('#countDown').fadeOut('fast');
+			}
+			$('#loginBox').addClass('has-success');
 			$('#loginBox').fadeOut('fast', function() {
 				$('#main').show('fast', function() {
 					$('#query').focus();
@@ -115,17 +121,32 @@ $('#loginpwd').keydown(function(event) {
 		} else {
 			var pd = $('#loginBox');
 			$('#loginpwd').css('background', 'red');
+			pd.addClass(' has-error');
 
-			for (var i = 1; i < 4; i++) {
-				pd.animate({
-					height: '+=10px',
-					width: '+=20px'
-				}, 30);
-				pd.animate({
-					height: '-=10px',
-					width: '-=20px'
-				}, 30);
-			}
+			var count = 0;
+			$('#countDown').fadeIn('fast');
+			interval = setInterval(function() {
+				if (count == 10) {
+					gui.App.quit();
+				}
+				$('#countDown').animate({
+					width: '-=10%'
+				}, 500);
+				for (var i = 1; i < 4; i++) {
+					pd.animate({
+						height: '+=10px',
+						width: '+=20px'
+					}, 30);
+					pd.animate({
+						height: '-=10px',
+						width: '-=20px'
+					}, 30);
+				}
+				count++;
+			}, 1000);
+
+
+
 		}
 
 		return false;
@@ -148,9 +169,9 @@ function query(t) {
 	return result;
 }
 
-function deToString(bs){
+function deToString(bs) {
 	var b = new Buffer(JSON.parse(bs));
-	return decrypto(b,mainpwd).toString();
+	return decrypto(b, mainpwd).toString();
 }
 
 function showResult(r) {
@@ -165,10 +186,10 @@ function showResult(r) {
 		var i = parseInt(e.target.hash.substr(1));
 		var di = $('  <li class="list-group-item"></li>');
 		var user = di.clone();
-		user.text( deToString(r[i].user));
+		user.text(deToString(r[i].user));
 		detail.append(user);
 		var pwd = di;
-		pwd.text( deToString(r[i].getMainPwd()));
+		pwd.text(deToString(r[i].getMainPwd()));
 		detail.append(pwd);
 	};
 	for (var i in r) {
@@ -189,10 +210,10 @@ $('#query').keydown(function(event) {
 function enToString(s) {
 	//why s is double-byte encoded??!!!
 	var ba = [];
-	for(var i in s){
+	for (var i in s) {
 		ba.push(s.charCodeAt(i));
 	}
-	var t = new Buffer(ba); 
+	var t = new Buffer(ba);
 	var b = encrypto(t, mainpwd);
 	return JSON.stringify(b.toByteArray());
 }
