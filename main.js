@@ -44,20 +44,35 @@ var doLogin = function(key) {
 
 };
 
+function showMsg(parent, msg) {
+	parent.append(msg);
+	setTimeout(function() {
+		msg.fadeOut('fast', function() {
+			msg.remove();
+		});
+
+	}, 3000);
+}
+
 function initPwd() {
 	$('#loginpwd').attr('placeholder', 'create your password...');
 	doLogin = function(key) {
 
 		//init password
 		var what = encrypto('this is key!', key);
-		fs.appendFile(keyFile, what, function(err) {
-			if (err)
-				console.log("fail " + err);
-			else
-				console.log("ok");
-		});
+		var err = fs.writeFileSync(keyFile, what);
 
-		return true;
+		if (err) {
+			console.log("fail " + err);
+			var p = $('<div class="alert alert-error" role="alert">could not create key, why?</div>');
+			showMsg($('#lgMsg'), p);
+			return false;
+		} else {
+			console.log("ok");
+			var p = $('<div class="alert alert-success" role="alert">key generated.</div>');
+			showMsg($('#lgMsg'), p);
+			return true;
+		}
 	}
 
 	$('#loginBox').fadeIn('slow', function() {
@@ -120,6 +135,9 @@ $('#loginpwd').keydown(function(event) {
 			$('#loginpwd').css('background', 'red');
 			pd.addClass(' has-error');
 
+			var p = $('<div class="alert alert-warning" role="alert">Invalid key, please correct it in 10 secs, or we\'ll say goodbye.</div>');
+			showMsg($('#lgMsg'), p);
+
 			var count = 0;
 			$('#countDown').fadeIn('fast');
 			for (var i = 1; i < 4; i++) {
@@ -140,16 +158,19 @@ $('#loginpwd').keydown(function(event) {
 					$('#countDown').animate({
 						width: '-=10%'
 					}, 500);
-					for (var i = 1; i < 4; i++) {
-						pd.animate({
-							height: '+=10px',
-							width: '+=20px'
-						}, 30);
-						pd.animate({
-							height: '-=10px',
-							width: '-=20px'
-						}, 30);
+					if (count > 4) {
+						for (var i = 1; i < 4; i++) {
+							pd.animate({
+								height: '+=10px',
+								width: '+=20px'
+							}, 30);
+							pd.animate({
+								height: '-=10px',
+								width: '-=20px'
+							}, 30);
+						}
 					}
+
 					count++;
 				}, 1000);
 			}
@@ -252,19 +273,15 @@ function addItem(item) {
 	entries.push(item);
 
 	fs.appendFile(dataFile, JSON.stringify(item) + '\n', function(err) {
+		var p;
 		if (err) {
 			console.log("fail " + err);
+			p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
 		} else {
 			console.log("ok");
-			var p = $('<div class="alert alert-success" role="alert">Success</div>');
-			$('#addRight').append(p);
-			setTimeout(function() {
-				p.fadeOut('fast', function() {
-					$('#addRight').empty();
-				});
-
-			}, 2000);
+			p = $('<div class="alert alert-success" role="alert">Success</div>');
 		}
+		showMsg($('#addRight'), p);
 
 	});
 }
