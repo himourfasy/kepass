@@ -132,27 +132,27 @@ $('#loginpwd').keydown(function(event) {
 					width: '-=20px'
 				}, 30);
 			}
-			interval = setInterval(function() {
-				if (count == 10) {
-					gui.App.quit();
-				}
-				$('#countDown').animate({
-					width: '-=10%'
-				}, 500);
-				for (var i = 1; i < 4; i++) {
-					pd.animate({
-						height: '+=10px',
-						width: '+=20px'
-					}, 30);
-					pd.animate({
-						height: '-=10px',
-						width: '-=20px'
-					}, 30);
-				}
-				count++;
-			}, 1000);
-
-
+			if (!interval) {
+				interval = setInterval(function() {
+					if (count == 10) {
+						gui.App.quit();
+					}
+					$('#countDown').animate({
+						width: '-=10%'
+					}, 500);
+					for (var i = 1; i < 4; i++) {
+						pd.animate({
+							height: '+=10px',
+							width: '+=20px'
+						}, 30);
+						pd.animate({
+							height: '-=10px',
+							width: '-=20px'
+						}, 30);
+					}
+					count++;
+				}, 1000);
+			}
 
 		}
 
