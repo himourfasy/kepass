@@ -6,10 +6,7 @@ function getUserHome() {
 	// return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 	return process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 }
-//since JSON in webkit will lead to a different value as in node interpreter.
-Buffer.prototype.toByteArray = function() {
-	return Array.prototype.slice.call(this, 0);
-}
+
 var events = require('events');
 var path = require('path');
 var fs = require('fs');
@@ -180,7 +177,7 @@ function query(t) {
 }
 
 function deToString(bs) {
-	var b = new Buffer(JSON.parse(bs));
+	var b = new Buffer(bs,'base64');
 	return decrypto(b, mainpwd).toString();
 }
 
@@ -225,7 +222,7 @@ function enToString(s) {
 	}
 	var t = new Buffer(ba);
 	var b = encrypto(t, mainpwd);
-	return JSON.stringify(b.toByteArray());
+	return b.toString('base64');
 }
 
 function entry(n) {
