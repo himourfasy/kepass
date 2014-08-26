@@ -98,7 +98,7 @@ fs.exists(dir, function(exists) {
 		fs.readFile(dataFile, 'utf8', function(err, data) {
 			if (!err) {
 				//load data
-				var content = data.split('\n');
+				var content = new Buffer(data,'hex').toString().split('\n');
 				for (var line in content) {
 					try {
 						entries.push(entry.fromJSONObject(JSON.parse(content[line])));
@@ -272,7 +272,7 @@ entry.fromJSONObject = function(j) {
 function addItem(item) {
 	entries.push(item);
 
-	fs.appendFile(dataFile, JSON.stringify(item) + '\n', function(err) {
+	fs.appendFile(dataFile, new Buffer(JSON.stringify(item) + '\n').toString('hex'), function(err) {
 		var p;
 		if (err) {
 			console.log("fail " + err);
