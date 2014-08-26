@@ -163,6 +163,8 @@ $('#loginpwd').keydown(function(event) {
 $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 	if (e.target.hash == '#home') {
 		$('#query').focus();
+	} else if (e.target.hash == '#add') {
+		$('#site').focus();
 	}
 });
 
@@ -177,7 +179,7 @@ function query(t) {
 }
 
 function deToString(bs) {
-	var b = new Buffer(bs,'base64');
+	var b = new Buffer(bs, 'base64');
 	return decrypto(b, mainpwd).toString();
 }
 
@@ -250,17 +252,55 @@ function addItem(item) {
 	entries.push(item);
 
 	fs.appendFile(dataFile, JSON.stringify(item) + '\n', function(err) {
-		if (err)
+		if (err) {
 			console.log("fail " + err);
-		else
+		} else {
 			console.log("ok");
+			var p = $('<div class="alert alert-success" role="alert">Success</div>');
+			$('#addRight').append(p);
+			setTimeout(function() {
+				p.fadeOut('fast', function() {
+					$('#addRight').empty();
+				});
+
+			}, 2000);
+		}
+
 	});
 }
 
-$('#btnAddItem').click(function() {
+function validateInput(e) {
+	if (e.val().trim().length == 0) {
+		e.parent().addClass('has-error');
+		return false;
+	} else {
+		e.parent().removeClass('has-error');
+		return true;
+	}
+}
+
+$('#site').keyup(function(event) {
+	if (event.keyCode == 13) {
+		if (validateInput($('#site'))) {
+			$('#user').focus();
+		}
+	}
+});
+$('#user').keyup(function(event) {
+	if (event.keyCode == 13) {
+		if (validateInput($('#user'))) {
+			$('#password').focus();
+		}
+	}
+});
+var addItemAction = function() {
 	var site = $('#site');
 	var user = $('#user');
 	var pwd = $('#password');
+	if (!(validateInput(site) & validateInput(user) & validateInput(pwd))) {
+		return;
+	}
+
 	var e = new entry(site.val());
 	e.setUser(user.val());
 	e.addPwd(pwd.val());
@@ -270,4 +310,12 @@ $('#btnAddItem').click(function() {
 	site.val('');
 	user.val('');
 	pwd.val('');
+};
+$('#password').keyup(function(event) {
+	if (event.keyCode == 13) {
+		if (validateInput($('#password'))) {
+			addItemAction();
+		}
+	}
 });
+$('#btnAddItem').click(addItemAction);
