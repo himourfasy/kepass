@@ -7,6 +7,20 @@ function getUserHome() {
 	return process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 }
 
+function arraydel(arr, val) {
+	var index = -1;
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i] == val) {
+			index = i;
+			break;
+		}
+	}
+
+	if (index > -1) {
+		arr.splice(index, 1);
+	}
+}
+
 var events = require('events');
 var path = require('path');
 var fs = require('fs');
@@ -234,6 +248,38 @@ function showResult(r) {
 		result.append(m);
 		m.click(click);
 	}
+	//bind action with current result
+	$('#btnDelete').click(function() {
+		$('#detail').parent().fadeOut('fast', function() {
+			var element = $("#result > a.active");
+			element.hide('fast', function() {
+				element.remove();
+
+				//update href
+				var index = parseInt(element[0].hash.substr(1));
+				//remove data
+				arraydel(entries, r[index]);
+				r.splice(index, 1);
+				showResult(r);
+				var buf = '';
+				for (var z in entries) {
+					buf += JSON.stringify(entries[z]) + '\n';
+				}
+				fs.writeFile(dataFile, new Buffer(buf).toString('hex'), function(err) {
+					var p;
+					if (err) {
+						console.log("fail " + err);
+						p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
+					} else {
+						console.log("ok");
+						p = $('<div class="alert alert-success" role="alert">Success</div>');
+					}
+					showMsg($('#bottomMsg'), p);
+
+				});
+			});
+		});
+	});
 }
 $('#query').keydown(function(event) {
 	if (event.keyCode == 13) {
