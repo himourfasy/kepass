@@ -98,7 +98,7 @@ fs.exists(dir, function(exists) {
 		fs.readFile(dataFile, 'utf8', function(err, data) {
 			if (!err) {
 				//load data
-				var content = new Buffer(data,'hex').toString().split('\n');
+				var content = new Buffer(data, 'hex').toString().split('\n');
 				for (var line in content) {
 					try {
 						entries.push(entry.fromJSONObject(JSON.parse(content[line])));
@@ -131,6 +131,7 @@ $('#loginpwd').keydown(function(event) {
 			});
 			mainpwd = key;
 		} else {
+			$('#loginpwd').val('');
 			var pd = $('#loginBox');
 			$('#loginpwd').css('background', 'red');
 			pd.addClass(' has-error');
@@ -205,6 +206,8 @@ function deToString(bs) {
 }
 
 function showResult(r) {
+	$('#detail').parent().fadeOut('fast');
+
 	var a = $(' <a href="#" class="list-group-item"></a>');
 	var result = $('#result');
 	result.empty();
@@ -221,6 +224,8 @@ function showResult(r) {
 		var pwd = di;
 		pwd.text(deToString(r[i].getMainPwd()));
 		detail.append(pwd);
+
+		detail.parent().fadeIn('fast');
 	};
 	for (var i in r) {
 		var m = a.clone();
