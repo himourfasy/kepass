@@ -278,8 +278,6 @@ $('#btnEdit').click(function() {
 	ui.val($('#detail').children(':first').text());
 	var pi = $('<input class="form-control" type="password" placeholder="Password" id="editPwd" />');
 	pi.val($('#detail').children(':last').text());
-	// var bs = $('');
-	// var bc = $('');
 	ui.keyup(function(event) {
 		if (event.keyCode == 13) {
 			if (validateInput(ui)) {
@@ -287,9 +285,15 @@ $('#btnEdit').click(function() {
 			}
 		}
 	});
+	pi.keyup(function(event) {
+		if (event.keyCode == 13) {
+			$('#btnSave').trigger('click');
+		}
+	});
 	var d = $('#detail');
 	d.empty();
 	d.append(ui, pi);
+	ui.focus();
 	$('#first').hide();
 	$('#second').show();
 });
