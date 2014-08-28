@@ -21,7 +21,7 @@ function arraydel(arr, val) {
 	}
 }
 
-var events = require('events');
+// var events = require('events');
 var path = require('path');
 var fs = require('fs');
 var gui = require('nw.gui');
@@ -33,6 +33,7 @@ var entries = [];
 var keyContent;
 var mainpwd;
 var interval;
+var searchResult;
 
 
 function encrypto(buf, key) {
@@ -219,12 +220,13 @@ function deToString(bs) {
 	return decrypto(b, mainpwd).toString();
 }
 
-function showResult(r) {
+function showResult() {
 	$('#detail').parent().fadeOut('fast');
 
 	var a = $(' <a href="#" class="list-group-item"></a>');
 	var result = $('#result');
 	result.empty();
+
 	var click = function(e) {
 		$(e.target).siblings().removeClass('active');
 		$(e.target).addClass('active');
@@ -233,58 +235,61 @@ function showResult(r) {
 		var i = parseInt(e.target.hash.substr(1));
 		var di = $('  <li class="list-group-item"></li>');
 		var user = di.clone();
-		user.text(deToString(r[i].user));
+		user.text(deToString(searchResult[i].user));
 		detail.append(user);
 		var pwd = di;
-		pwd.text(deToString(r[i].getMainPwd()));
+		pwd.text(deToString(searchResult[i].getMainPwd()));
 		detail.append(pwd);
-
 		detail.parent().fadeIn('fast');
 	};
-	for (var i in r) {
+
+	for (var i in searchResult) {
 		var m = a.clone();
 		m.attr('href', '#' + i);
-		m.text(r[i].site);
+		m.text(searchResult[i].site);
 		result.append(m);
 		m.click(click);
 	}
-	//bind action with current result
-	$('#btnDelete').click(function() {
-		$('#detail').parent().fadeOut('fast', function() {
-			var element = $("#result > a.active");
-			element.hide('fast', function() {
-				element.remove();
+}
+$('#btnDelete').click(function() {
+	$('#detail').parent().fadeOut('fast', function() {
+		if (searchResult == null || searchResult.length == 0) {
+			return;
+		}
+		var element = $("#result > a.active");
+		element.hide('fast', function() {
+			element.remove();
 
-				//update href
-				var index = parseInt(element[0].hash.substr(1));
-				//remove data
-				arraydel(entries, r[index]);
-				r.splice(index, 1);
-				showResult(r);
-				var buf = '';
-				for (var z in entries) {
-					buf += JSON.stringify(entries[z]) + '\n';
+			var index = parseInt(element[0].hash.substr(1));
+			//remove data
+			arraydel(entries, searchResult[index]);
+			searchResult.splice(index, 1);
+			//update href
+			showResult();
+			//update data file
+			var buf = '';
+			for (var z in entries) {
+				buf += JSON.stringify(entries[z]) + '\n';
+			}
+			fs.writeFile(dataFile, new Buffer(buf).toString('hex'), function(err) {
+				var p;
+				if (err) {
+					console.log("fail " + err);
+					p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
+				} else {
+					console.log("ok");
+					p = $('<div class="alert alert-success" role="alert">Success</div>');
 				}
-				fs.writeFile(dataFile, new Buffer(buf).toString('hex'), function(err) {
-					var p;
-					if (err) {
-						console.log("fail " + err);
-						p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
-					} else {
-						console.log("ok");
-						p = $('<div class="alert alert-success" role="alert">Success</div>');
-					}
-					showMsg($('#bottomMsg'), p);
-
-				});
+				showMsg($('#bottomMsg'), p);
 			});
 		});
 	});
-}
+});
 $('#query').keydown(function(event) {
 	if (event.keyCode == 13) {
 		var text = $('#query').val();
-		showResult(query(text));
+		searchResult = query(text);
+		showResult();
 	}
 });
 
@@ -378,6 +383,8 @@ var addItemAction = function() {
 	site.val('');
 	user.val('');
 	pwd.val('');
+
+	site.focus();
 };
 $('#password').keyup(function(event) {
 	if (event.keyCode == 13) {
