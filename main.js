@@ -205,6 +205,24 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 	}
 });
 
+function saveAll() {
+	var buf = '';
+	for (var z in entries) {
+		buf += JSON.stringify(entries[z]) + '\n';
+	}
+	fs.writeFile(dataFile, new Buffer(buf).toString('hex'), function(err) {
+		var p;
+		if (err) {
+			console.log("fail " + err);
+			p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
+		} else {
+			console.log("ok");
+			p = $('<div class="alert alert-success" role="alert">Success</div>');
+		}
+		showMsg($('#bottomMsg'), p);
+	});
+}
+
 function query(t) {
 	var result = [];
 	for (var i in entries) {
@@ -233,8 +251,13 @@ var showDetail = function(e) {
 	var pwd = di;
 	pwd.text(deToString(searchResult[i].getMainPwd()));
 	detail.append(pwd);
+
+	$('#first').show();
+	$('#second').hide();
+
 	detail.parent().fadeIn('fast');
 };
+
 function showResult() {
 	$('#detail').parent().fadeOut('fast');
 
@@ -250,6 +273,46 @@ function showResult() {
 		m.click(showDetail);
 	}
 }
+$('#btnEdit').click(function() {
+	var ui = $('<input class="form-control" type="text" placeholder="User Name" id="editUser" />');
+	ui.val($('#detail').children(':first').text());
+	var pi = $('<input class="form-control" type="password" placeholder="Password" id="editPwd" />');
+	pi.val($('#detail').children(':last').text());
+	// var bs = $('');
+	// var bc = $('');
+	ui.keyup(function(event) {
+		if (event.keyCode == 13) {
+			if (validateInput(ui)) {
+				pi.focus();
+			}
+		}
+	});
+	var d = $('#detail');
+	d.empty();
+	d.append(ui, pi);
+	$('#first').hide();
+	$('#second').show();
+});
+$('#btnSave').click(function() {
+	var user = $('#editUser');
+	var pwd = $('#editPwd');
+	if (!(validateInput(user) & validateInput(pwd))) {
+		return;
+	}
+	var element = $("#result > a.active");
+	var index = parseInt(element[0].hash.substr(1));
+
+	var e = searchResult[index];
+	e.setUser(user.val());
+	e.setMainPwd(pwd.val());
+
+	saveAll();
+
+	$("#result > a.active").trigger('click');
+});
+$('#btnCancel').click(function() {
+	$("#result > a.active").trigger('click');
+});
 $('#btnDelete').click(function() {
 	$('#detail').parent().fadeOut('fast', function() {
 		if (searchResult == null || searchResult.length == 0) {
@@ -266,21 +329,7 @@ $('#btnDelete').click(function() {
 			//update href
 			showResult();
 			//update data file
-			var buf = '';
-			for (var z in entries) {
-				buf += JSON.stringify(entries[z]) + '\n';
-			}
-			fs.writeFile(dataFile, new Buffer(buf).toString('hex'), function(err) {
-				var p;
-				if (err) {
-					console.log("fail " + err);
-					p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
-				} else {
-					console.log("ok");
-					p = $('<div class="alert alert-success" role="alert">Success</div>');
-				}
-				showMsg($('#bottomMsg'), p);
-			});
+			saveAll();
 		});
 	});
 });
@@ -314,8 +363,12 @@ entry.prototype.getMainPwd = function() {
 entry.prototype.setUser = function(u) {
 	this.user = enToString(u);
 }
-entry.prototype.addPwd = function(e) {
-	this.pwds.push(enToString(e));
+entry.prototype.setMainPwd = function(e) {
+	if (this.pwds.length == 0) {
+		this.pwds.push(enToString(e));
+	} else {
+		this.pwds.splice(0, 1, enToString(e));
+	}
 };
 entry.fromJSONObject = function(j) {
 	var e = new entry(j.site);
@@ -375,7 +428,7 @@ var addItemAction = function() {
 
 	var e = new entry(site.val());
 	e.setUser(user.val());
-	e.addPwd(pwd.val());
+	e.setMainPwd(pwd.val());
 
 	addItem(e);
 
