@@ -220,6 +220,21 @@ function deToString(bs) {
 	return decrypto(b, mainpwd).toString();
 }
 
+var showDetail = function(e) {
+	$(e.target).siblings().removeClass('active');
+	$(e.target).addClass('active');
+	var detail = $('#detail');
+	detail.empty();
+	var i = parseInt(e.target.hash.substr(1));
+	var di = $('  <li class="list-group-item"></li>');
+	var user = di.clone();
+	user.text(deToString(searchResult[i].user));
+	detail.append(user);
+	var pwd = di;
+	pwd.text(deToString(searchResult[i].getMainPwd()));
+	detail.append(pwd);
+	detail.parent().fadeIn('fast');
+};
 function showResult() {
 	$('#detail').parent().fadeOut('fast');
 
@@ -227,28 +242,12 @@ function showResult() {
 	var result = $('#result');
 	result.empty();
 
-	var click = function(e) {
-		$(e.target).siblings().removeClass('active');
-		$(e.target).addClass('active');
-		var detail = $('#detail');
-		detail.empty();
-		var i = parseInt(e.target.hash.substr(1));
-		var di = $('  <li class="list-group-item"></li>');
-		var user = di.clone();
-		user.text(deToString(searchResult[i].user));
-		detail.append(user);
-		var pwd = di;
-		pwd.text(deToString(searchResult[i].getMainPwd()));
-		detail.append(pwd);
-		detail.parent().fadeIn('fast');
-	};
-
 	for (var i in searchResult) {
 		var m = a.clone();
 		m.attr('href', '#' + i);
 		m.text(searchResult[i].site);
 		result.append(m);
-		m.click(click);
+		m.click(showDetail);
 	}
 }
 $('#btnDelete').click(function() {

@@ -16,3 +16,6 @@ body {
 #countDown {
 	display: none;
 }
+#bottomMsg{
+	width: 60%;
+}
