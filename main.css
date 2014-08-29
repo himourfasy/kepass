@@ -1,21 +1,21 @@
 body {
-	background: #333333 url(grid.png);
+    background: #333333 url(grid.png);
 }
 #main {
-	display: none;
+    display: none;
 }
 #loginBox {
-	display: none;
-	width: 40%;
-	position: relative;
-	margin-top: 20%;
+    display: none;
+    width: 40%;
+    position: relative;
+    margin-top: 20%;
 }
 #loginpwd {
-	font-weight: bold;
+    font-weight: bold;
 }
 #countDown {
-	display: none;
+    display: none;
 }
-#bottomMsg{
-	width: 60%;
+#bottomMsg {
+    width: 60%;
 }

@@ -1,12 +1,11 @@
 {
-	"name": "kepass",
-	"main": "index.html",
-	"window": {
-		"toolbar": false,
-		"show": false,
-		"position": "mouse",
-		"width": 800,
-		"height": 500,
-		"resizable": false
-	}
+    "name": "kepass",
+    "main": "index.html",
+    "window": {
+        "toolbar": false,
+        "show": false,
+        "position": "mouse",
+        "width": 800,
+        "height": 500
+    }
 }
