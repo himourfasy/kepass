@@ -148,7 +148,7 @@ $('#loginpwd').keydown(function(event) {
         } else {
             $('#loginpwd').val('');
             var pd = $('#loginBox');
-            $('#loginpwd').css('background', 'red');
+            $('#loginpwd').css('background', '#e74c3c');
             pd.addClass(' has-error');
 
             var p = $('<div class="alert alert-warning" role="alert">Invalid key, please correct it in 10 secs, or we\'ll say goodbye.</div>');
@@ -450,3 +450,35 @@ $('#password').keyup(function(event) {
     }
 });
 $('#btnAddItem').click(addItemAction);
+
+var slider = $("#slider");
+var update = function() {
+    $('#generate').text('key length: ' + slider.slider('value'));
+};
+if (slider.length > 0) {
+    slider.slider({
+        min: 5,
+        max: 29,
+        value: 8,
+        orientation: 'horizontal',
+        range: 'min',
+        slide: update,
+        change: update
+    });
+}
+
+function randomChar() {
+    return parseInt(93 * Math.random()) + 33;
+}
+$('#generate').click(function() {
+    //33-126
+    var length = slider.slider('value');
+    var b = [];
+    for (; length > 0; length--) {
+        b.push(randomChar());
+    }
+    $('#random').val(new Buffer(b).toString('ascii'));
+});
+$('#random').mouseenter(function() {
+    $(this).select();
+});

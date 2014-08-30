@@ -19,3 +19,8 @@ body {
 #bottomMsg {
     width: 60%;
 }
+#random {
+    background-color: #e67e22;
+    color: black;
+    font-weight: bold;
+}
