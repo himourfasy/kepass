@@ -238,18 +238,30 @@ function deToString(bs) {
     return decrypto(b, mainpwd).toString();
 }
 
+
+function getCopyAction() {
+    var p = $('<a class="btn btn-warning btn-xs" href="#copy" style="float:right;"><span class="glyphicon glyphicon-share"></span></a>');
+    p.click(function() {
+        var clipboard = gui.Clipboard.get();
+        clipboard.set(p.parent().text(), 'text');
+    });
+    return p;
+}
+
 var showDetail = function(e) {
     $(e.target).siblings().removeClass('active');
     $(e.target).addClass('active');
     var detail = $('#detail');
     detail.empty();
     var i = parseInt(e.target.hash.substr(1));
-    var di = $('  <li class="list-group-item"></li>');
+    var di = $('<li class="list-group-item"></li>');
     var user = di.clone();
     user.text(deToString(searchResult[i].user));
+    user.append(getCopyAction());
     detail.append(user);
     var pwd = di;
     pwd.text(deToString(searchResult[i].getMainPwd()));
+    pwd.append(getCopyAction());
     detail.append(pwd);
 
     $('#first').show();
