@@ -467,17 +467,49 @@ if (slider.length > 0) {
     });
 }
 
-function randomChar() {
-    return parseInt(93 * Math.random()) + 33;
+function randomChar(special) {
+    if (special) {
+        //all
+        return random(33, 126);
+    } else {
+        var n = random(0, 2);
+        switch (n) {
+            case 0:
+                //0-9
+                return random(48, 57);
+            case 1:
+                //A-Z
+                return random(65, 90);
+            case 2:
+            default:
+                //a-z
+                return random(97, 122);
+        }
+    }
+
+}
+
+function random(start, end) {
+    return Math.floor((end - start + 1) * Math.random() + start);
 }
 $('#generate').click(function() {
     //33-126
     var length = slider.slider('value');
     var b = [];
+    var s = $('#special').parent().hasClass('checked');
     for (; length > 0; length--) {
-        b.push(randomChar());
+        b.push(randomChar(s));
     }
     $('#random').val(new Buffer(b).toString('ascii'));
+
+
+    //test
+    for (var t = 0; t < 100; t++) {
+        var m = random(0, 2);
+        if (m == 2) {
+            console.log("message");
+        }
+    }
 });
 $('#random').mouseenter(function() {
     $(this).select();
