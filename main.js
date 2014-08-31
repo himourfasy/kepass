@@ -513,15 +513,6 @@ $('#generate').click(function() {
         b.push(randomChar(s));
     }
     $('#random').val(new Buffer(b).toString('ascii'));
-
-
-    //test
-    for (var t = 0; t < 100; t++) {
-        var m = random(0, 2);
-        if (m == 2) {
-            console.log("message");
-        }
-    }
 });
 $('#random').mouseenter(function() {
     $(this).select();
