@@ -517,3 +517,21 @@ $('#generate').click(function() {
 $('#random').mouseenter(function() {
     $(this).select();
 });
+
+//change password
+var invalidCount = 0;
+$('#curpwd').keyup(function(event) {
+
+    if (event.keyCode == 13) {
+        if (mainpwd == $('#curpwd').val()) {
+            //correct
+
+        } else {
+            invalidCount++;
+        }
+
+        if (invalidCount > 3) {
+            gui.App.quit();
+        }
+    }
+});
