@@ -240,7 +240,7 @@ function deToString(bs) {
 
 
 function getCopyAction() {
-    var p = $('<a class="btn btn-warning btn-xs" href="#copy" style="float:right;"><span class="glyphicon glyphicon-share"></span></a>');
+    var p = $('<a class="btn btn-warning btn-xs" href="#copy" style="float:right;"><span class="glyphicon glyphicon-send"></span></a>');
     p.click(function() {
         var clipboard = gui.Clipboard.get();
         clipboard.set(p.parent().text(), 'text');
