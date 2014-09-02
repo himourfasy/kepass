@@ -282,6 +282,8 @@ function showResult() {
             showPage(num);
         });
         $('#pagination').show();
+    } else {
+        $('#pagination').hide();
     }
 }
 
