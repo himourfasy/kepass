@@ -260,7 +260,7 @@ var showDetail = function(e) {
     user.append(getCopyAction());
     detail.append(user);
     var pwd = di;
-    pwd.text(deToString(searchResult[i].getMainPwd()));
+    pwd.text(deToString(searchResult[i].getPwd()));
     pwd.append(getCopyAction());
     detail.append(pwd);
 
@@ -320,7 +320,7 @@ $('#btnSave').click(function() {
 
     var e = searchResult[index];
     e.setUser(user.val());
-    e.setMainPwd(pwd.val());
+    e.setPwd(pwd.val());
 
     saveAll();
 
@@ -357,39 +357,42 @@ $('#query').keydown(function(event) {
     }
 });
 
-function enToString(s) {
+function enToString(s, key) {
     //why s is double-byte encoded??!!!
     var ba = [];
     for (var i in s) {
         ba.push(s.charCodeAt(i));
     }
     var t = new Buffer(ba);
-    var b = encrypto(t, mainpwd);
+    var b = encrypto(t, key);
     return b.toString('base64');
 }
 
 function entry(n) {
     this.site = n;
-    this.user = "";
-    this.pwds = new Array();
+    this.user = '';
+    this.pwd = '';
 }
-entry.prototype.getMainPwd = function() {
-    return this.pwds[0];
+entry.prototype.getPwd = function() {
+    return this.pwd;
 };
 entry.prototype.setUser = function(u) {
-    this.user = enToString(u);
+    this.user = enToString(u, mainpwd);
 }
-entry.prototype.setMainPwd = function(e) {
-    if (this.pwds.length == 0) {
-        this.pwds.push(enToString(e));
-    } else {
-        this.pwds.splice(0, 1, enToString(e));
-    }
+entry.prototype.setPwd = function(e) {
+    this.pwd = enToString(e, mainpwd);
+};
+entry.prototype.updateWithKey = function(nk) {
+    var t = deToString(this.user);
+    this.user = enToString(t, nk);
+
+    t = deToString(this.pwd);
+    this.pwd = enToString(t, nk);
 };
 entry.fromJSONObject = function(j) {
     var e = new entry(j.site);
     e.user = j.user;
-    e.pwds = j.pwds;
+    e.pwd = j.pwd;
     return e;
 }
 
@@ -444,7 +447,7 @@ var addItemAction = function() {
 
     var e = new entry(site.val());
     e.setUser(user.val());
-    e.setMainPwd(pwd.val());
+    e.setPwd(pwd.val());
 
     addItem(e);
 
@@ -567,6 +570,10 @@ $('#changepwd').click(function() {
             var p = $('<div class="alert alert-danger" role="alert">could not change password, why?</div>');
             showMsg($('#bottomMsg'), p);
         } else {
+            //existing entries should be re-encrypto.
+            for (var i in entries) {
+                entries[i].updateWithKey(newpwd);
+            }
             mainpwd = newpwd;
             saveAll();
         }
