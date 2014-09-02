@@ -271,13 +271,30 @@ var showDetail = function(e) {
 };
 
 function showResult() {
+    showPage(1);
+
+    if (searchResult.length > 5) {
+        $('#pagination').bootpag({
+            total: (searchResult.length + 4) / 5,
+            page: 1,
+            maxVisible: 5
+        }).on('page', function(event, num) {
+            showPage(num);
+        });
+        $('#pagination').show();
+    }
+}
+
+function showPage(num) {
     $('#detail').parent().fadeOut('fast');
 
     var a = $(' <a href="#" class="list-group-item"></a>');
     var result = $('#result');
     result.empty();
 
-    for (var i in searchResult) {
+    var i = 5 * (num - 1);
+    var to = i + 5 > searchResult.length ? searchResult.length : i + 5;
+    for (; i < to; i++) {
         var m = a.clone();
         m.attr('href', '#' + i);
         m.text(searchResult[i].site);
@@ -285,6 +302,7 @@ function showResult() {
         m.click(showDetail);
     }
 }
+
 $('#btnEdit').click(function() {
     var ui = $('<input class="form-control" type="text" placeholder="User Name" id="editUser" />');
     ui.val($('#detail').children(':first').text());
