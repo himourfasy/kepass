@@ -148,7 +148,7 @@ $('#loginpwd').keydown(function(event) {
         } else {
             $('#loginpwd').val('');
             var pd = $('#loginBox');
-            $('#loginpwd').css('background', '#e74c3c');
+            // $('#loginpwd').css('background', '#e74c3c');
             pd.addClass(' has-error');
 
             var p = $('<div class="alert alert-warning" role="alert">Invalid key, please correct it in 10 secs, or we\'ll say goodbye.</div>');
