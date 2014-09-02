@@ -79,7 +79,7 @@ function initPwd() {
 
         if (err) {
             console.log("fail " + err);
-            var p = $('<div class="alert alert-error" role="alert">could not create key, why?</div>');
+            var p = $('<div class="alert alert-danger" role="alert">could not create key, why?</div>');
             showMsg($('#lgMsg'), p);
             return false;
         } else {
@@ -214,7 +214,7 @@ function saveAll() {
         var p;
         if (err) {
             console.log("fail " + err);
-            p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
+            p = $('<div class="alert alert-danger" role="alert">Faild to write.Why?</div>');
         } else {
             console.log("ok");
             p = $('<div class="alert alert-success" role="alert">Success</div>');
@@ -400,7 +400,7 @@ function addItem(item) {
         var p;
         if (err) {
             console.log("fail " + err);
-            p = $('<div class="alert alert-error" role="alert">Faild to write.Why?</div>');
+            p = $('<div class="alert alert-danger" role="alert">Faild to write.Why?</div>');
         } else {
             console.log("ok");
             p = $('<div class="alert alert-success" role="alert">Success</div>');
@@ -520,18 +520,59 @@ $('#random').mouseenter(function() {
 
 //change password
 var invalidCount = 0;
-$('#curpwd').keyup(function(event) {
+$('#changepwd').click(function() {
+    var error = false;
+    if (mainpwd == $('#curpwd').val()) {
+        //correct
+        $('#curpwd').parent().removeClass(' has-error');
+        $('#curpwd').parent().addClass(' has-success');
+    } else {
+        invalidCount++;
+        $('#curpwd').parent().removeClass(' has-success');
+        $('#curpwd').parent().addClass(' has-error');
+        error = true;
 
-    if (event.keyCode == 13) {
-        if (mainpwd == $('#curpwd').val()) {
-            //correct
-
-        } else {
-            invalidCount++;
-        }
-
-        if (invalidCount > 3) {
-            gui.App.quit();
-        }
+        var msg = '<div class="alert alert-danger" role="alert">Wrong password, ' + (4 - invalidCount) + ' times left for trying</div>';
+        var p = $(msg);
+        showMsg($('#bottomMsg'), p);
     }
+    if (invalidCount > 3) {
+        gui.App.quit();
+    }
+
+    var newpwd = $('#newpwd').val();
+    if (newpwd == mainpwd || newpwd.length == 0) {
+        $('#newpwd').parent().addClass(' has-error');
+        error = true;
+    } else {
+        $('#newpwd').parent().removeClass(' has-error');
+    }
+    if (newpwd != $('#confpwd').val()) {
+        $('#confpwd').parent().addClass(' has-error');
+        error = true;
+    } else {
+        $('#confpwd').parent().removeClass(' has-error');
+    }
+
+    if (error) {
+        return;
+    }
+
+
+    //change password
+    var what = encrypto('this is key!', newpwd);
+    //update key file.
+    fs.writeFile(keyFile, what, function(err) {
+        if (err) {
+            var p = $('<div class="alert alert-danger" role="alert">could not change password, why?</div>');
+            showMsg($('#bottomMsg'), p);
+        } else {
+            mainpwd = newpwd;
+            saveAll();
+        }
+    });
+
+    $('#curpwd').val('');
+    $('#newpwd').val('');
+    $('#confpwd').val('');
 });
